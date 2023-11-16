@@ -22,7 +22,7 @@ class SearchBar extends Component {
     event.preventDefault();
 
     if (this.state.searchQuery.trim() !== '') {
-      this.props.onFormSubmit(this.state.searchQuery);
+      this.props.updateQuery(this.state.searchQuery);
       this.setState({ searchQuery: '' });
     } else {
       toast.error('Input field must not be empty');
@@ -37,7 +37,6 @@ class SearchBar extends Component {
             <SearchFormLabelStyled>Search</SearchFormLabelStyled>
             <AiOutlineSearch />
           </SearchBtn>
-
           <SearchFormInputStyled
             type="text"
             autoComplete="off"
