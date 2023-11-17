@@ -12,11 +12,6 @@ class App extends Component {
   state = { query: '', page: 1, totalHits: 0, hits: [], loading: false };
 
   componentDidUpdate(prevProps, prevState) {
-    window.scrollBy({
-      top: document.body.clientHeight,
-      behavior: 'smooth',
-    });
-
     const { query, page } = this.state;
 
     if (prevState.query !== query) {
@@ -41,7 +36,7 @@ class App extends Component {
   }
 
   updateQuery = query => {
-    this.setState({ query });
+    this.setState({ query, page: 1, hits: [] });
   };
 
   updatePage = () => {
@@ -52,9 +47,9 @@ class App extends Component {
     if (query === '') {
       return;
     } else {
-      this.setState({ loading: true });
+      this.setState({ loading: true, page: 1, hits: [] });
       const { totalHits, hits } = await APIRequest(query, 1);
-      this.setState({ totalHits, hits, page: 1, loading: false });
+      this.setState({ totalHits, hits, loading: false });
     }
   };
 
@@ -63,6 +58,11 @@ class App extends Component {
     const { query } = this.state;
     const { hits } = await APIRequest(query, page);
     this.setState({ hits: [...prevState.hits, ...hits], page, loading: false });
+
+    window.scrollBy({
+      top: document.body.clientHeight,
+      behavior: 'smooth',
+    });
   };
 
   render() {
