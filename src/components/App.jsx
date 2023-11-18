@@ -14,7 +14,7 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { query, page } = this.state;
 
-    if (prevState.query !== query) {
+    if (prevState.query !== query || (prevState.page !== page && page !== 1)) {
       this.formFetch(query);
     }
 
@@ -28,10 +28,6 @@ class App extends Component {
         draggable: true,
         progress: undefined,
       });
-    }
-
-    if (prevState.page !== page && page !== 1) {
-      this.loadMore(prevState, page);
     }
   }
 
@@ -47,22 +43,19 @@ class App extends Component {
     if (query === '') {
       return;
     } else {
-      this.setState({ loading: true, page: 1, hits: [] });
-      const { totalHits, hits } = await APIRequest(query, 1);
-      this.setState({ totalHits, hits, loading: false });
+      this.setState({ loading: true });
+      const { totalHits, hits } = await APIRequest(query, this.state.page);
+      this.setState(prevState => ({
+        totalHits,
+        hits: [...prevState.hits, ...hits],
+        loading: false,
+      }));
+
+      window.scrollBy({
+        top: document.body.clientHeight,
+        behavior: 'smooth',
+      });
     }
-  };
-
-  loadMore = async (prevState, page) => {
-    this.setState({ loading: true });
-    const { query } = this.state;
-    const { hits } = await APIRequest(query, page);
-    this.setState({ hits: [...prevState.hits, ...hits], page, loading: false });
-
-    window.scrollBy({
-      top: document.body.clientHeight,
-      behavior: 'smooth',
-    });
   };
 
   render() {
